@@ -1,0 +1,48 @@
+# shellcheck disable=SC2034,SC2154
+# This is an example PKGBUILD file. Use this as a start to creating your own,
+# and remove these comments. For more information, see 'man PKGBUILD'.
+# NOTE: Please fill out the license field for your package! If it is unknown,
+# then please put 'unknown'.
+
+# Maintainer: UtsavBalar1231 <utsavbalar1231@gmail.com>
+pkgname='vaaman-aes-git'
+_pkgname="vaaman-aes"
+pkgver=0.1.0
+pkgrel=1
+epoch=1
+arch=('aarch64')
+url="https://github.com/vicharak-in/vaaman-aes"
+pkgdesc="Authentication binary for vaaman"
+license=('Apache')
+depends=()
+makedepends=('rust' 'cargo' 'git' 'fakeroot')
+checkdepends=()
+provides=('vaaman-aes')
+conflicts=('vaaman-aes')
+source=("$_pkgname::git+https://github.com/vicharak-in/vaaman-aes.git")
+sha256sums=('SKIP')
+
+pkgver() {
+	cd $_pkgname || return 1
+	echo "$(grep '^version =' Cargo.toml | head -n1 | cut -d\" -f2 | cut -d\- -f1).$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)"
+}
+
+build() {
+	cd "$_pkgname" || return 1
+	env CARGO_INCREMENTAL=0 cargo build --release --locked
+}
+
+check() {
+	cd "$_pkgname" || return 1
+	env CARGO_INCREMENTAL=0 cargo test --release
+}
+
+package_vaaman-aes-git() {
+	cd $_pkgname || return 1
+
+	install -D -m755 "target/release/vaaman-aes" "$pkgdir/usr/bin/vaaman-aes"
+	install -D -m755 "vaaman-boardinfo.service" "$pkgdir/usr/lib/systemd/system/vaaman-boardinfo.service"
+
+	sudo systemctl enable vaaman-boardinfo.service
+	sudo systemctl start vaaman-boardinfo.service
+}

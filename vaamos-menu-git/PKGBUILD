@@ -1,0 +1,75 @@
+# shellcheck disable=SC2034,SC2154
+# This is an example PKGBUILD file. Use this as a start to creating your own,
+# and remove these comments. For more information, see 'man PKGBUILD'.
+# NOTE: Please fill out the license field for your package! If it is unknown,
+# then please put 'unknown'.
+
+# Maintainer: UtsavBalar1231 <utsavbalar1231@gmail.com>
+
+pkgname=vaamos-menu-git
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Application Menu for VaamOS'
+arch=('aarch64')
+license=(GPLv3)
+url="https://github.com/vicharak-in/vaamos-menu"
+depends=('gtk3' 'glib2')
+makedepends=('meson' 'git' 'mold' 'rustup' 'clang')
+source=("${pkgname}::git+$url.git")
+sha512sums=('SKIP')
+provides=('vaamos-menu')
+conflicts=('vaamos-menu')
+options=(strip)
+
+pkgver() {
+	cd "${srcdir}/${pkgname}" || exit
+	printf "%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+check() {
+	cd "${srcdir}/${pkgname}" || exit
+	cargo test --release --verbose
+
+	echo "--Checking with clippy--"
+	cargo clippy --release
+
+	echo "--Checking style--"
+	cargo fmt --all -- --check
+}
+
+build() {
+	cd "${srcdir}/${pkgname}" || return
+
+	if ! rustc --version | grep nightly >/dev/null 2>&1; then
+		echo "Installing nightly compiler…"
+		rustup toolchain install nightly
+		rustup default nightly
+	fi
+
+	if ! which cargo >/dev/null 2>&1 || ! cargo fmt --help >/dev/null 2>&1; then
+		echo "Installing rustfmt…"
+		rustup component add rustfmt
+	fi
+
+	if ! which cargo >/dev/null 2>&1 || ! cargo clippy --help >/dev/null 2>&1; then
+		echo "Installing clippy…"
+		rustup component add clippy
+	fi
+
+	_cpuCount=$(grep -c -w ^processor /proc/cpuinfo)
+
+	export RUSTFLAGS="-Cembed-bitcode -C opt-level=3 -Ccodegen-units=1 -Clinker=clang -C link-arg=-flto -Clink-arg=-fuse-ld=/usr/bin/mold"
+	meson --buildtype=release --prefix=/usr build
+
+	meson compile -C build --jobs "${_cpuCount}"
+}
+
+package() {
+	cd "${srcdir}/${pkgname}"/build || return
+
+	export RUSTFLAGS="-Cembed-bitcode -C opt-level=3 -Ccodegen-units=1 -Clinker=clang -C link-arg=-flto -Clink-arg=-fuse-ld=/usr/bin/mold"
+	DESTDIR="${pkgdir}" meson install
+
+	install -Dvm644 ../${pkgname/-git/}.desktop \
+		"$pkgdir/etc/skel/.config/autostart/${pkgname/-git/}.desktop"
+}
