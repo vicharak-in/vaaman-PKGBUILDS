@@ -6,8 +6,8 @@ do
         d=$(dirname "$f")
         cd "$d"  || exit
 		makepkg -s --noconfirm --skippgpcheck "$@"
-		makepkg --printsrcinfo > .SRCINFO
-		rm -rf src pkg "$d"
+		makepkg --printsrcinfo > /tmp/srcinfo && mv /tmp/srcinfo .SRCINFO
+		sudo rm -rf src pkg "$d"
         cd ..
 done
 
@@ -15,5 +15,5 @@ done
 files=$(find . -name "*.pkg.tar.zst")
 for f in $files
 do
-		repo-add vaaman.db.tar.gz "$f"
+		sudo repo-add vaaman.db.tar.gz "$f"
 done

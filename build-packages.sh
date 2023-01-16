@@ -6,6 +6,6 @@ do
         d=$(dirname "$f")
         cd "$d"  || exit
 		makepkg -s --noconfirm --skippgpcheck "$@"
-		rm -rf src pkg
+		sudo rm -rf src pkg
         cd ..
 done
