@@ -1,0 +1,19 @@
+pkgbase = vaaman-aes-git
+	pkgdesc = Authentication binary for vaaman
+	pkgver = 0.1.0.22.gead4524
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/vicharak-in/vaaman-aes
+	arch = aarch64
+	arch = x86_64
+	license = Apache
+	makedepends = rust
+	makedepends = cargo
+	makedepends = git
+	makedepends = fakeroot
+	provides = vaaman-aes
+	conflicts = vaaman-aes
+	source = vaaman-aes::git+https://github.com/vicharak-in/vaaman-aes.git
+	sha256sums = SKIP
+
+pkgname = vaaman-aes-git

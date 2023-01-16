@@ -1,0 +1,22 @@
+pkgbase = vaamos-menu-git
+	pkgdesc = Application Menu for VaamOS
+	pkgver = 6.e5143b0
+	pkgrel = 1
+	url = https://github.com/vicharak-in/vaamos-menu
+	arch = aarch64
+	arch = x86_64
+	license = GPLv3
+	makedepends = meson
+	makedepends = git
+	makedepends = mold
+	makedepends = rustup
+	makedepends = clang
+	depends = gtk3
+	depends = glib2
+	provides = vaamos-menu
+	conflicts = vaamos-menu
+	options = strip
+	source = vaamos-menu-git::git+https://github.com/vicharak-in/vaamos-menu.git
+	sha512sums = SKIP
+
+pkgname = vaamos-menu-git
