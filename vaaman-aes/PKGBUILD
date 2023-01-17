@@ -7,7 +7,7 @@
 # Maintainer: UtsavBalar1231 <utsavbalar1231@gmail.com>
 pkgname='vaaman-aes-git'
 _pkgname="vaaman-aes"
-pkgver=0.1.0
+pkgver=0.1.0.22.gead4524
 pkgrel=1
 epoch=1
 arch=('aarch64' 'x86_64')

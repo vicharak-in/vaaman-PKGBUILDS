@@ -21,11 +21,6 @@ provides=('vaamos-menu')
 conflicts=('vaamos-menu')
 options=(strip)
 
-pkgver() {
-	cd "${srcdir}/${pkgname}" || exit
-	printf "%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-}
-
 check() {
 	cd "${srcdir}/${pkgname}" || exit
 	cargo test --release --verbose

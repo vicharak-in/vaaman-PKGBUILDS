@@ -11,6 +11,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc='Application Menu for VaamOS'
 arch=('aarch64' 'x86_64')
+groups=('vaaman')
 license=(GPLv3)
 url="https://github.com/vicharak-in/vaamos-menu"
 depends=('gtk3' 'glib2')
@@ -18,11 +19,11 @@ makedepends=('meson' 'git' 'mold' 'rustup' 'clang')
 source=("${pkgname}-${pkgver}.tar.gz::$url/archive/v$pkgver.tar.gz")
 sha512sums=('SKIP')
 provides=('vaamos-menu')
-conflicts=('vaamos-menu' 'rust' 'rustup')
+conflicts=('vaamos-menu')
 options=(strip)
 
 build() {
-	cd "${srcdir}/${_pkgname}-${pkgver}" || return
+	cd "${srcdir}/${pkgname}-${pkgver}" || return
 
 	if ! rustc --version | grep nightly >/dev/null 2>&1; then
 		echo "Installing nightly compiler…"
@@ -39,7 +40,7 @@ build() {
 }
 
 package() {
-	cd "${srcdir}/${_pkgname}-${pkgver}"/build || return
+	cd "${srcdir}/${pkgname}-${pkgver}"/build || return
 
 	export RUSTFLAGS="-Cembed-bitcode -C opt-level=3 -Ccodegen-units=1 -Clinker=clang -C link-arg=-flto -Clink-arg=-fuse-ld=/usr/bin/mold"
 	DESTDIR="${pkgdir}" meson install
